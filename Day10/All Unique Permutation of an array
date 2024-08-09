@@ -1,0 +1,70 @@
+//{ Driver Code Starts
+//Initial Template for C++
+
+#include <bits/stdc++.h>
+using namespace std;
+
+
+// } Driver Code Ends
+//User function Template for C++
+
+class Solution {
+  public:
+    void backtrack(vector<int> &arr, vector<bool> &visited, vector<int> &current, set<vector<int>> &result) {
+        if (current.size() == arr.size()) {
+            result.insert(current);
+            return;
+        }
+        
+        for (int i = 0; i < arr.size(); i++) {
+            if (!visited[i]) {
+                visited[i] = true;
+                current.push_back(arr[i]);
+                backtrack(arr, visited, current, result);
+                current.pop_back();
+                visited[i] = false;
+            }
+        }
+    }
+
+    vector<vector<int>> uniquePerms(vector<int> &arr, int n) {
+        sort(arr.begin(), arr.end());
+        set<vector<int>> result;
+        vector<int> current;
+        vector<bool> visited(n, false);
+        
+        backtrack(arr, visited, current, result);
+        
+        return vector<vector<int>>(result.begin(), result.end());
+    }
+};
+
+
+//{ Driver Code Starts.
+
+int main() {
+    int t;
+    cin >> t;
+    while (t--) {
+        int n;
+        
+        cin>>n;
+        vector<int> arr(n);
+        
+        for(int i=0 ; i<n ; i++)
+            cin>>arr[i];
+
+        Solution ob;
+        vector<vector<int>> res = ob.uniquePerms(arr,n);
+        for(int i=0; i<res.size(); i++)
+        {
+            for(int j=0; j<n; j++)
+            {
+                cout<<res[i][j]<<" ";
+            }
+            cout<<"\n";
+        }
+    }
+    return 0;
+}
+// } Driver Code Ends
