@@ -1,0 +1,81 @@
+//{ Driver Code Starts
+#include<bits/stdc++.h>
+using namespace std;
+
+
+// } Driver Code Ends
+class Solution
+{
+    public:
+    // Function to find the smallest window in the string s consisting
+    // of all the characters of string p.
+    string smallestWindow (string s, string p)
+    {
+        // Frequency array for characters in P
+        vector<int> pFreq(128, 0);
+        for(char c : p) {
+            pFreq[c]++;
+        }
+        
+        // Frequency array for the current window in S
+        vector<int> sFreq(128, 0);
+        
+        int required = p.size();  // Number of characters we need to match
+        int formed = 0;           // Number of characters matched so far
+        int left = 0, right = 0;  // Two pointers for the sliding window
+        int minLen = INT_MAX;     // Minimum length of the valid window
+        int startIdx = -1;        // Starting index of the minimum window
+        
+        while(right < s.size()) {
+            char c = s[right];
+            sFreq[c]++;
+            
+            // If this character is part of P and its frequency in the current window is less than or equal to its frequency in P
+            if(pFreq[c] > 0 && sFreq[c] <= pFreq[c]) {
+                formed++;
+            }
+            
+            // If we have a valid window, try to minimize it
+            while(formed == required) {
+                // Update the result if this window is smaller
+                if(right - left + 1 < minLen) {
+                    minLen = right - left + 1;
+                    startIdx = left;
+                }
+                
+                // Shrink the window from the left
+                char cLeft = s[left];
+                sFreq[cLeft]--;
+                if(pFreq[cLeft] > 0 && sFreq[cLeft] < pFreq[cLeft]) {
+                    formed--;
+                }
+                left++;
+            }
+            
+            // Expand the window by moving the right pointer
+            right++;
+        }
+        
+        // Return the smallest window or "-1" if no such window is found
+        return startIdx == -1 ? "-1" : s.substr(startIdx, minLen);
+    }
+};
+
+//{ Driver Code Starts.
+int main()
+ {
+    int t;
+    cin>>t;
+    while(t--)
+    {
+        string s;
+        cin>>s;
+        string pat;
+        cin>>pat;
+        Solution obj;
+        cout<<obj.smallestWindow(s, pat)<<endl;
+        
+    }
+	return 0;
+}
+// } Driver Code Ends
