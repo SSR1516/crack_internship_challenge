@@ -1,0 +1,80 @@
+class Solution {
+public:
+    /*
+    This function checks whether the current substring represented by str contains all the characters
+    and their counts as specified in the target string txt. It iterates through the character counts and
+    returns false if any character is missing or has a count less than required.
+    */
+    bool containsSubstring(vector<int> &str, vector<int> &txt) {
+        for (int i = 0; i < 52; i++) {
+            if (txt[i] > 0 && str[i] < txt[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
+	
+	/*
+	This function maps a character to an index in the range of [0, 51]. It uses ASCII values to map
+	lowercase letters to indices [0, 25] and uppercase letters to indices [26, 51].
+	*/
+    int index(char &c) {
+        if (c - 'a' >= 0) {
+            return c - 'a';
+        }
+        return c - 'A' + 26;
+    }
+    
+    string minWindow(string s, string t) {
+        vector<int> txt(52, 0), str(52, 0);
+        
+        for (auto i: t) {
+            txt[index(i)]++;
+        }
+        
+        int start = 0;
+        int minLen = INT_MAX;
+        int stIx = 0, enIx = 0;
+        
+        for (int i = 0; i < s.size(); i++) {
+            str[index(s[i])]++;
+
+            if (containsSubstring(str, txt) and txt[index(s[i])] > 0) {
+                int currLen = i - start + 1;
+                if (currLen < minLen) {
+                    stIx = start;
+                    enIx = i;
+                    minLen = currLen;
+                }
+
+                while (start < i and str[index(s[start])] - 1 >= txt[index(s[start])]) {
+                    currLen = i - start + 1;
+                    if (currLen < minLen) {
+                        stIx = start;
+                        enIx = i;
+                        minLen = currLen;
+                    }
+                    str[index(s[start])]--;
+                    start++;
+                }
+                
+                currLen = i - start + 1;
+                if (currLen < minLen) {
+                    stIx = start;
+                    enIx = i;
+                    minLen = currLen;
+                }
+            }
+        }
+
+        string ans = "";
+        
+        if (minLen != INT_MAX) {
+            for (int i = stIx; i <= enIx; i++) {
+                ans += s[i];
+            }
+        }
+        
+        return ans;
+    }
+};
