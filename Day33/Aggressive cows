@@ -1,0 +1,57 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+// Function to check if it is possible to place cows with minimum distance `d`
+bool canPlaceCows(const vector<int>& stalls, int cows, int minDist) {
+    int count = 1; // Place the first cow in the first stall
+    int lastPos = stalls[0]; // Last position where the cow was placed
+    
+    for (int i = 1; i < stalls.size(); ++i) {
+        if (stalls[i] - lastPos >= minDist) {
+            // Place the next cow
+            count++;
+            lastPos = stalls[i];
+            if (count == cows) {
+                return true; // All cows have been placed successfully
+            }
+        }
+    }
+    return false;
+}
+
+int largestMinDist(int n, int c, vector<int>& stalls) {
+    sort(stalls.begin(), stalls.end()); // Sort the stall locations
+    
+    int left = 1; // Minimum possible distance
+    int right = stalls[n - 1] - stalls[0]; // Maximum possible distance
+    int result = 0;
+    
+    while (left <= right) {
+        int mid = left + (right - left) / 2;
+        if (canPlaceCows(stalls, c, mid)) {
+            result = mid; // Mid distance is possible, try for a larger distance
+            left = mid + 1;
+        } else {
+            right = mid - 1; // Mid distance is not possible, try for a smaller distance
+        }
+    }
+    
+    return result; // This will be the largest minimum distance
+}
+
+int main() {
+    int t;
+    cin >> t;
+    while (t--) {
+        int n, c;
+        cin >> n >> c;
+        vector<int> stalls(n);
+        for (int i = 0; i < n; ++i) {
+            cin >> stalls[i];
+        }
+        cout << largestMinDist(n, c, stalls) << endl;
+    }
+    return 0;
+}
