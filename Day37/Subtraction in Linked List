@@ -1,0 +1,185 @@
+//{ Driver Code Starts
+#include <bits/stdc++.h>
+using namespace std;
+
+struct Node {
+    int data;
+    Node* next;
+
+    Node(int x)
+        : data(x)
+        , next(nullptr) {}
+};
+
+void printList(Node* head) {
+    while (head != nullptr) {
+        cout << head->data;
+        head = head->next;
+    }
+    cout << '\n';
+}
+
+
+// } Driver Code Ends
+// User function Template for C++
+
+class Solution {
+public:
+    // Utility function to reverse the linked list
+    Node* reverse(Node* head) {
+        Node* prev = nullptr;
+        Node* curr = head;
+        Node* next = nullptr;
+
+        while (curr != nullptr) {
+            next = curr->next;
+            curr->next = prev;
+            prev = curr;
+            curr = next;
+        }
+
+        return prev;
+    }
+
+    // Utility function to remove leading zeros
+    Node* removeLeadingZeros(Node* head) {
+        while (head != nullptr && head->data == 0) {
+            head = head->next;
+        }
+        return head == nullptr ? new Node(0) : head;
+    }
+
+    // Utility function to compare two linked lists
+    int compare(Node* head1, Node* head2) {
+        // Compare lengths first
+        Node* temp1 = head1;
+        Node* temp2 = head2;
+
+        int len1 = 0, len2 = 0;
+        while (temp1) {
+            len1++;
+            temp1 = temp1->next;
+        }
+        while (temp2) {
+            len2++;
+            temp2 = temp2->next;
+        }
+
+        if (len1 > len2) return 1;
+        if (len1 < len2) return -1;
+
+        // If lengths are the same, compare node by node
+        while (head1 && head2) {
+            if (head1->data > head2->data) return 1;
+            if (head1->data < head2->data) return -1;
+            head1 = head1->next;
+            head2 = head2->next;
+        }
+
+        return 0; // Both lists are equal
+    }
+
+    Node* subLinkedList(Node* head1, Node* head2) {
+        // Step 1: Remove leading zeros
+        head1 = removeLeadingZeros(head1);
+        head2 = removeLeadingZeros(head2);
+
+        // Step 2: Compare the two linked lists to determine the larger one
+        int cmp = compare(head1, head2);
+
+        // If head2 is larger, swap head1 and head2 to always subtract smaller from larger
+        if (cmp < 0) {
+            swap(head1, head2);
+        }
+
+        // Step 3: Reverse both linked lists
+        head1 = reverse(head1);
+        head2 = reverse(head2);
+
+        // Step 4: Subtract the two linked lists
+        Node* result = nullptr;
+        Node* tail = nullptr;
+        int borrow = 0;
+
+        while (head1 != nullptr || head2 != nullptr) {
+            int val1 = (head1 != nullptr) ? head1->data : 0;
+            int val2 = (head2 != nullptr) ? head2->data : 0;
+
+            int sub = val1 - val2 - borrow;
+            if (sub < 0) {
+                sub += 10;
+                borrow = 1;
+            } else {
+                borrow = 0;
+            }
+
+            Node* newNode = new Node(sub);
+            if (result == nullptr) {
+                result = newNode;
+                tail = newNode;
+            } else {
+                tail->next = newNode;
+                tail = newNode;
+            }
+
+            if (head1 != nullptr) head1 = head1->next;
+            if (head2 != nullptr) head2 = head2->next;
+        }
+
+        // Step 5: Reverse the result linked list
+        result = reverse(result);
+
+        // Step 6: Remove any leading zeros from the result
+        result = removeLeadingZeros(result);
+
+        return result;
+    }
+};
+
+
+
+//{ Driver Code Starts.
+
+// Driver program to test the above functions
+int main() {
+    int T;
+    cin >> T;
+
+    while (T--) {
+        Node *head1 = nullptr, *tail1 = nullptr;
+        Node *head2 = nullptr, *tail2 = nullptr;
+        string input1, input2;
+
+        cin >> input1 >> input2;
+        for (char ch : input1) {
+            int tmp = ch - '0';
+            Node* new_node = new Node(tmp);
+            if (!head1) {
+                head1 = new_node;
+                tail1 = new_node;
+            } else {
+                tail1->next = new_node;
+                tail1 = new_node;
+            }
+        }
+
+        for (char ch : input2) {
+            int tmp = ch - '0';
+            Node* new_node = new Node(tmp);
+            if (!head2) {
+                head2 = new_node;
+                tail2 = new_node;
+            } else {
+                tail2->next = new_node;
+                tail2 = new_node;
+            }
+        }
+
+        Solution obj;
+        Node* result = obj.subLinkedList(head1, head2);
+        printList(result);
+    }
+    return 0;
+}
+
+// } Driver Code Ends
