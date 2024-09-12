@@ -1,0 +1,96 @@
+//{ Driver Code Starts
+#include <bits/stdc++.h>
+#include <stdio.h>
+#include <stdlib.h>
+using namespace std;
+
+struct Node
+{
+	int data;
+	struct Node *left;
+	struct Node *right;
+	
+	Node(int x){
+	    data = x;
+	    left = NULL;
+	    right = NULL;
+	}
+};
+
+void printInorder (struct Node* node)
+{
+	if (node == NULL)return;
+	printInorder(node->left);
+	printf("%d ", node->data);
+	printInorder (node->right);
+}
+
+Node* constructTree(int n, int pre[], char preLN[]);
+
+int main()
+{
+    int t;
+    cin>>t;
+    while(t--)
+    {
+        Node* root = NULL;
+        int n;
+        cin>>n;
+        int pre[n];
+        char preLN[n];
+        for(int i=0; i<n; i++)cin>>pre[i];
+        for(int i=0; i<n; i++)cin>>preLN[i];
+        root = constructTree (n, pre, preLN);
+        printInorder(root);
+        cout<<endl;
+    }
+	return 0;
+}
+
+// } Driver Code Ends
+
+
+/*Structure of the Node of the binary tree is as
+struct Node
+{
+	int data;
+	struct Node *left;
+	struct Node *right;
+};
+*/
+// function should return the root of the new binary tree formed
+// Structure of the Node of the binary tree
+// You can use the globally defined Node structure here directly.
+// No need to define it again.
+
+struct Node *constructTreeUtil(int &index, int n, int pre[], char preLN[]) {
+    // Base case: if index is out of bounds
+    if (index >= n) {
+        return NULL;
+    }
+
+    // Create the current node
+    Node* node = new Node(pre[index]);
+
+    // If the current node is a leaf, just return it
+    if (preLN[index] == 'L') {
+        return node;
+    }
+
+    // Increment index for the next recursion
+    index++;
+
+    // Recursively construct the left and right children if the node is not a leaf
+    node->left = constructTreeUtil(index, n, pre, preLN);
+    index++;
+    node->right = constructTreeUtil(index, n, pre, preLN);
+
+    return node;
+}
+
+// Main function to construct the tree
+struct Node *constructTree(int n, int pre[], char preLN[])
+{
+    int index = 0;  // Index to keep track of the current node in preorder array
+    return constructTreeUtil(index, n, pre, preLN);
+}
